@@ -47,7 +47,41 @@ const register = async (req, res) => {
   });
 };
 
+//Sign user in
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email });
+
+  // Check if user exists
+  if (!user) {
+    res.status(404).json({ errors: ["Usuário ou senha incorreto."] });
+    return;
+  }
+
+  // Check if password matches
+  if (!(await bcrypt.compare(password, user.password))) {
+    res.status(422).json({ errors: ["Usuário ou senha incorreto."] });
+    return;
+  }
+
+  res.status(201).json({
+    _id: user._id,
+    profileImage: user.profileImage,
+    token: generateToken(user._id),
+  });
+};
+
+// Get current logged  in user
+const getCurrentUser = async (req, res) => {
+  // O user foi colocado na requisição no middleware do authGuard
+  const user = req.user;
+
+  res.status(200).json(user);
+};
+
 module.exports = {
-  generateToken,
   register,
+  login,
+  getCurrentUser,
 };
