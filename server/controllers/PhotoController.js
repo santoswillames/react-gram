@@ -112,7 +112,7 @@ const updatePhoto = async (req, res) => {
 
   // Check if photo exists
   if (!photo) {
-    res.status(404).json({ erros: ["Foto nãoencontrada!"] });
+    res.status(404).json({ erros: ["Foto não encontrada!"] });
     return;
   }
 
@@ -133,6 +133,82 @@ const updatePhoto = async (req, res) => {
   res.status(200).json({ photo, message: "Foto atualizada com sucesso!" });
 };
 
+// Like functionality
+const likePhoto = async (req, res) => {
+  const { id } = req.params;
+
+  const reqUser = req.user;
+
+  const photo = await Photo.findById(id);
+
+  // Check if photo exists
+  if (!photo) {
+    res.status(404).json({ erros: ["Foto não encontrada!"] });
+    return;
+  }
+
+  // Check if user already liked the photo
+  if (photo.likes.includes(reqUser._id)) {
+    res.status(422).json({ errors: ["Você já curtiu a foto"] });
+    return;
+  }
+
+  // Put user id in likes array
+  photo.likes.push(reqUser._id);
+
+  photo.save();
+
+  res
+    .status(200)
+    .json({ photoId: id, userId: reqUser._id, message: "A foto foi curtida." });
+};
+
+// Comments functionality
+const commentPhoto = async (req, res) => {
+  const { id } = req.params;
+
+  const { comment } = req.body;
+
+  const reqUser = req.user;
+
+  const user = await User.findById(reqUser._id);
+
+  const photo = await Photo.findById(id);
+
+  // Check if photo exists
+  if (!photo) {
+    res.status(404).json({ erros: ["Foto não encontrada!"] });
+    return;
+  }
+
+  // Put comment in the array comments
+  const userComment = {
+    comment,
+    userName: user.name,
+    userImage: user.profileImage,
+    userId: user._id,
+  };
+
+  photo.comments.push(userComment);
+
+  await photo.save();
+
+  res.status(200).json({
+    comment: userComment,
+    message: "O comentário foi adicionado com sucesso!",
+  });
+};
+
+// Search photos by title
+const searchPhotos = async (req, res) => {
+  const { q } = req.query;
+
+  //Expressão regular busca qualquer coisa que contém a query
+  const photos = await Photo.find({ title: new RegExp(q, "i") }).exec();
+
+  res.status(200).json(photos);
+};
+
 module.exports = {
   insertPhoto,
   deletePhoto,
@@ -140,4 +216,7 @@ module.exports = {
   getUserPhotos,
   getPhotoById,
   updatePhoto,
+  likePhoto,
+  commentPhoto,
+  searchPhotos,
 };
