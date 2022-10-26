@@ -2,6 +2,7 @@ import "./Auth.css";
 
 // Components
 import { Link } from "react-router-dom";
+import Message from "../../components/Message";
 
 // Hooks
 import { useState, useEffect } from "react";
@@ -73,7 +74,9 @@ const Register = () => {
           onChange={handleInputChange}
           value={formValues.confirmPassword || ""}
         />
-        <input type="submit" value="Cadastrar" />
+        {!loading && <input type="submit" value="Cadastrar" />}
+        {loading && <input type="submit" value="Aguarde..." disabled />}
+        {error && <Message msg={error} type="error" />}
       </form>
       <p>
         Já possui uma conta? <Link to="/login">Clique aqui.</Link>
