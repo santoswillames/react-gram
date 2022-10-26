@@ -5,9 +5,19 @@ import { Link } from "react-router-dom";
 
 // Hooks
 import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+
+// Redux
+import { register, reset } from "../../slices/authSlice";
 
 const Register = () => {
   const [formValues, setFormValues] = useState({});
+
+  // Permite utilizar as funções do Redux
+  const dispatch = useDispatch();
+
+  // Extraindo os state do slice
+  const { loading, error } = useSelector((state) => state.auth);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -21,7 +31,14 @@ const Register = () => {
     const formData = new FormData(e.target);
 
     const user = Object.fromEntries(formData);
+
+    dispatch(register(user));
   };
+
+  // Clean all auth state
+  useEffect(() => {
+    dispatch(reset());
+  }, [dispatch]);
 
   return (
     <div id="register">
