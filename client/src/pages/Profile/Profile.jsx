@@ -11,12 +11,12 @@ import { BsFillEyeFill, BsPencilFill, BsXLg } from "react-icons/bs";
 import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
+import { useResetComponentMessage } from "../../hooks/useResetComponentMessage";
 
 // Redux
 import { getUserDetails } from "../../slices/userSlice";
 import {
   publishPhoto,
-  resetMessage,
   getUserPhotos,
   deletePhoto,
   updatePhoto,
@@ -26,6 +26,8 @@ const Profile = () => {
   const { id } = useParams();
 
   const dispatch = useDispatch();
+
+  const resetComponentMessage = useResetComponentMessage(dispatch);
 
   const { user, loading } = useSelector((state) => state.user);
   const { user: userAuth } = useSelector((state) => state.auth);
@@ -56,12 +58,6 @@ const Profile = () => {
     const image = e.target.files[0];
 
     setImage(image);
-  };
-
-  const resetComponentMessage = () => {
-    setTimeout(() => {
-      dispatch(resetMessage());
-    }, 2000);
   };
 
   const submitHandle = (e) => {
