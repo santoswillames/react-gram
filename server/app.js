@@ -14,12 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Solve cors
-app.use(
-  cors({
-    credentials: true,
-    origin: "http://127.0.0.1:5173",
-  })
-);
+app.use(cors());
 
 // Upload directory
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
